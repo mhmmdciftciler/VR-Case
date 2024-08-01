@@ -6,23 +6,19 @@ using UnityEngine;
 
 namespace VRCase
 {
-    public class GameManager : MonoBehaviour
+    /// <summary>
+    /// Manages the visibility of outlines for pallets based on the grabbing and ungrabbing actions of grabbable objects.
+    /// </summary>
+    /// <remarks>
+    /// - When a `Grabbable` object is grabbed, all pallets' outlines are enabled.
+    /// - When a `Grabbable` object is ungrabbed, all pallets' outlines are disabled.
+    /// </remarks>
+    public class GrabOutlineService : MonoBehaviour
     {
-        public static GameManager Instance;
         [SerializeField] private List<Grabbable> _grabables;
         [SerializeField] private List<Pallet> _pallets;
         private void Start()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else
-            {
-                Destroy(gameObject);
-                return;
-            }
             foreach (Grabbable grabbable in _grabables)
             {
                 grabbable.onGrab.AddListener(OnGrab);

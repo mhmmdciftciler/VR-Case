@@ -14,26 +14,24 @@ namespace VRCase
 
         [SerializeField] private Outline _outline;
 
+        private BoxType _oldBoxType;
+
         public UnityEvent<Pallet, BoxType> OnPalletBoxTypeChangedEvent;
 
-        private BoxType _oldBoxType;
-        public override void Render()
+        public void Update()
         {
-            base.Render();
-            if(Object != null)
+            if (Object != null)
             {
                 if (_oldBoxType != CurrentBoxType)
                 {
                     _oldBoxType = CurrentBoxType;
-                    OnPalletBoxTypeChangedEvent?.Invoke(this, CurrentBoxType);
+                    OnPalletBoxTypeChangedEvent?.Invoke(this, CurrentBoxType);//On changed Current Box Type this event must call Invoke. 
                 }
             }
-
         }
         private void OnTriggerEnter(Collider other)
         {
-            if (Runner.IsSharedModeMasterClient &&
-                CurrentBoxType == BoxType.None &&
+            if (CurrentBoxType == BoxType.None && // The box can enter to the pallet while current box has none.
                 other.TryGetComponent<Box>(out Box box))
             {
 
@@ -45,9 +43,8 @@ namespace VRCase
         }
         private void OnTriggerExit(Collider other)
         {
-            if (Runner.IsSharedModeMasterClient &&
-                other.TryGetComponent<Box>(out Box box) &&
-                CurrentBoxId == box.NetworkObject.Id.Raw)
+            if (other.TryGetComponent<Box>(out Box box) &&
+                CurrentBoxId == box.NetworkObject.Id.Raw)// if the exit box is current box can exit.
             {
                 CurrentBoxType = BoxType.None;
                 OnPalletBoxTypeChangedEvent?.Invoke(this, CurrentBoxType);
@@ -58,6 +55,13 @@ namespace VRCase
                 }
             }
         }
+
+        /// <summary>
+        /// Validates the current pallet's box type against the box types of its neighboring pallets according to game play rules.
+        /// </summary>
+        /// <returns>
+        /// <c>true</c> if the current box type is valid with respect to all neighboring pallets' box types; otherwise, <c>false</c>.
+        /// </returns>
         public bool IsPalletRuleValidate()
         {
             foreach (Pallet pallet in NeighbourPallets)
@@ -68,6 +72,10 @@ namespace VRCase
             return true;
         }
 
+        /// <summary>
+        /// Enables or disables the outline for this pallet based on the specified flag.
+        /// </summary>
+        /// <param name="enabled">A boolean flag indicating whether the outline should be enabled or disabled.</param>
         public void EnableOutline(bool enabled)
         {
             if (enabled && CurrentBoxType != BoxType.None)// This pallet is already using

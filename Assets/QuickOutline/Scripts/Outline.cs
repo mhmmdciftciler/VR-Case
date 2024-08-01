@@ -29,7 +29,7 @@ public class Outline : MonoBehaviour
     }
 
     [SerializeField]
-    private LayerMask OutlineMask;
+    private int OutlineMask = 8;
     [SerializeField]
     private Color outlineColor = Color.white;
     [SerializeField,Tooltip("Not working!!!")]
@@ -48,7 +48,7 @@ public class Outline : MonoBehaviour
     void OnEnable()
     {
         SetColor(outlineColor, _outlineWidth);
-        gameObject.layer = LayerMask.GetMask(LayerMask.LayerToName(OutlineMask.value));
+        gameObject.layer = OutlineMask;
     }
 
     void OnValidate()

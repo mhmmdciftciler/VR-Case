@@ -9,16 +9,17 @@ namespace VRCase
 {
     public class Box : MonoBehaviour
     {
-        [SerializeField] private BoxType boxType;
-        public BoxType BoxType => boxType;
+        [field:SerializeField]public BoxType BoxType { get; private set; }
 
         public bool IsGrabbing { get; private set; }
         public NetworkObject NetworkObject { get; private set; }
+
         private Grabbable _grabbable;
         private void Start()
         {
-            _grabbable = GetComponent<Grabbable>();
             NetworkObject = GetComponent<NetworkObject>();
+            _grabbable = GetComponent<Grabbable>();
+
             _grabbable.onGrab.AddListener(OnGrab);
             _grabbable.onUngrab.AddListener(OnUnGrab);
         }
@@ -33,11 +34,5 @@ namespace VRCase
             IsGrabbing = true;
         }
     }
-    public enum BoxType
-    {
-        None,
-        A,
-        B,
-        C
-    }
+
 }
